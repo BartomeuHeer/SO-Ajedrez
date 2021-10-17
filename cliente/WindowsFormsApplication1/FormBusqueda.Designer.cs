@@ -39,9 +39,10 @@ namespace WindowsFormsApplication1
             // desconectar
             // 
             this.desconectar.BackColor = System.Drawing.Color.Red;
-            this.desconectar.Location = new System.Drawing.Point(325, 321);
+            this.desconectar.Location = new System.Drawing.Point(488, 494);
+            this.desconectar.Margin = new System.Windows.Forms.Padding(4, 5, 4, 5);
             this.desconectar.Name = "desconectar";
-            this.desconectar.Size = new System.Drawing.Size(117, 41);
+            this.desconectar.Size = new System.Drawing.Size(176, 63);
             this.desconectar.TabIndex = 0;
             this.desconectar.Text = "desconectar";
             this.desconectar.UseVisualStyleBackColor = false;
@@ -50,9 +51,10 @@ namespace WindowsFormsApplication1
             // rb1
             // 
             this.rb1.AutoSize = true;
-            this.rb1.Location = new System.Drawing.Point(173, 100);
+            this.rb1.Location = new System.Drawing.Point(260, 154);
+            this.rb1.Margin = new System.Windows.Forms.Padding(4, 5, 4, 5);
             this.rb1.Name = "rb1";
-            this.rb1.Size = new System.Drawing.Size(109, 17);
+            this.rb1.Size = new System.Drawing.Size(162, 24);
             this.rb1.TabIndex = 1;
             this.rb1.TabStop = true;
             this.rb1.Text = "primera busqueda";
@@ -61,20 +63,22 @@ namespace WindowsFormsApplication1
             // rb2
             // 
             this.rb2.AutoSize = true;
-            this.rb2.Location = new System.Drawing.Point(173, 139);
+            this.rb2.Location = new System.Drawing.Point(260, 214);
+            this.rb2.Margin = new System.Windows.Forms.Padding(4, 5, 4, 5);
             this.rb2.Name = "rb2";
-            this.rb2.Size = new System.Drawing.Size(85, 17);
+            this.rb2.Size = new System.Drawing.Size(162, 24);
             this.rb2.TabIndex = 2;
             this.rb2.TabStop = true;
-            this.rb2.Text = "radioButton2";
+            this.rb2.Text = "segona busqueda";
             this.rb2.UseVisualStyleBackColor = true;
             // 
             // rb3
             // 
             this.rb3.AutoSize = true;
-            this.rb3.Location = new System.Drawing.Point(173, 177);
+            this.rb3.Location = new System.Drawing.Point(260, 272);
+            this.rb3.Margin = new System.Windows.Forms.Padding(4, 5, 4, 5);
             this.rb3.Name = "rb3";
-            this.rb3.Size = new System.Drawing.Size(85, 17);
+            this.rb3.Size = new System.Drawing.Size(126, 24);
             this.rb3.TabIndex = 3;
             this.rb3.TabStop = true;
             this.rb3.Text = "radioButton3";
@@ -82,9 +86,10 @@ namespace WindowsFormsApplication1
             // 
             // btnGet
             // 
-            this.btnGet.Location = new System.Drawing.Point(173, 225);
+            this.btnGet.Location = new System.Drawing.Point(260, 346);
+            this.btnGet.Margin = new System.Windows.Forms.Padding(4, 5, 4, 5);
             this.btnGet.Name = "btnGet";
-            this.btnGet.Size = new System.Drawing.Size(140, 40);
+            this.btnGet.Size = new System.Drawing.Size(210, 62);
             this.btnGet.TabIndex = 4;
             this.btnGet.Text = "Comprovar";
             this.btnGet.UseVisualStyleBackColor = true;
@@ -92,14 +97,15 @@ namespace WindowsFormsApplication1
             // 
             // FormBusqueda
             // 
-            this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
+            this.AutoScaleDimensions = new System.Drawing.SizeF(9F, 20F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(454, 374);
+            this.ClientSize = new System.Drawing.Size(681, 575);
             this.Controls.Add(this.btnGet);
             this.Controls.Add(this.rb3);
             this.Controls.Add(this.rb2);
             this.Controls.Add(this.rb1);
             this.Controls.Add(this.desconectar);
+            this.Margin = new System.Windows.Forms.Padding(4, 5, 4, 5);
             this.Name = "FormBusqueda";
             this.Text = "FormBusqueda";
             this.ResumeLayout(false);

@@ -31,7 +31,7 @@ namespace WindowsFormsApplication1
             server.Send(msg);
 
             // Nos desconectamos
-            
+
             server.Shutdown(SocketShutdown.Both);
             server.Close();
         }
@@ -60,9 +60,36 @@ namespace WindowsFormsApplication1
                     apellido1[i - 1] = info[i].Split(',')[1];
                     apellido2[i - 1] = info[i].Split(',')[2];
                 }
-                FormPrimeraBus sel = new FormPrimeraBus(nombres,apellido1,apellido2,total);
+                FormPrimeraBus sel = new FormPrimeraBus(nombres, apellido1, apellido2, total);
+
+            }
+            else if (rb2.Checked)
+            {
+                string mensaje = "3/";
+                // Enviamos al servidor el nombre tecleado
+                byte[] msg = Encoding.ASCII.GetBytes(mensaje);
+                server.Send(msg);
+
+                //Recibimos la respuesta del servidor
+                byte[] msg2 = new byte[80];
+                server.Receive(msg2);
+                mensaje = Encoding.ASCII.GetString(msg2).Split('\0')[0];
+                int total = Int32.Parse(mensaje.Split('/')[0]);
+                string[] info = mensaje.Split('/');
+                string[] nom = new string[50];
+                string[] cognom1 = new string[50];
+                string[] cognom2 = new string[50];
+                for (int i = 1; i <= total; i++)
+                {
+                    int v = i - 1;
+                    nom[v] = info[i].Split(',')[0];
+                    cognom1[i - 1] = info[i].Split(',')[1];
+                    cognom2[i - 1] = info[i].Split(',')[2];
+                }
+                FormPrimeraBus sel = new FormPrimeraBus(nom, cognom1, cognom2, total);
 
             }
         }
     }
+           
 }

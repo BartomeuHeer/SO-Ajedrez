@@ -43,7 +43,6 @@ namespace WindowsFormsApplication1
                 FormInicio inicio = new FormInicio();
                 inicio.setSocket(server);
                 this.Close();
-
             }
             catch (SocketException ex)
             {
