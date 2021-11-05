@@ -25,10 +25,10 @@ namespace WindowsFormsApplication1
 
             for (int i = 0; i < total; i++)
             {
-
-                dataGridView1.Rows[i].Cells[0].Value = nombres[0];
-                dataGridView1.Rows[i].Cells[1].Value = apellido1[0];
-                dataGridView1.Rows[i].Cells[2].Value = apellido2[0];
+                dataGridView1.Rows.Add();
+                dataGridView1.Rows[i].Cells[0].Value = nombres[i];
+                dataGridView1.Rows[i].Cells[1].Value = apellido1[i];
+                dataGridView1.Rows[i].Cells[2].Value = apellido2[i];
             }
         }
 
