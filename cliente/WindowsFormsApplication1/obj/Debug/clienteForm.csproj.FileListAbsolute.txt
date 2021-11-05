@@ -101,3 +101,14 @@ C:\Users\Usuario\OneDrive\Escritorio\cliente_con_conexion_desconexion\WindowsFor
 C:\Users\Usuario\OneDrive\Escritorio\cliente_con_conexion_desconexion\WindowsFormsApplication1\obj\Debug\WindowsFormsApplication1.FormInicio.resources
 C:\Users\Usuario\OneDrive\Escritorio\cliente_con_conexion_desconexion\WindowsFormsApplication1\obj\Debug\WindowsFormsApplication1.FormPrimeraBus.resources
 C:\Users\Usuario\OneDrive\Escritorio\cliente_con_conexion_desconexion\WindowsFormsApplication1\obj\Debug\WindowsFormsApplication1.FormSegonsBus.resources
+D:\Documentos\Uni\Tercer curs\SO\ProyectoSOAjedrez\cliente\WindowsFormsApplication1\bin\Debug\WindowsFormsApplication1.exe
+D:\Documentos\Uni\Tercer curs\SO\ProyectoSOAjedrez\cliente\WindowsFormsApplication1\bin\Debug\WindowsFormsApplication1.pdb
+D:\Documentos\Uni\Tercer curs\SO\ProyectoSOAjedrez\cliente\WindowsFormsApplication1\obj\Debug\clienteForm.csproj.AssemblyReference.cache
+D:\Documentos\Uni\Tercer curs\SO\ProyectoSOAjedrez\cliente\WindowsFormsApplication1\obj\Debug\WindowsFormsApplication1.FormInicio.resources
+D:\Documentos\Uni\Tercer curs\SO\ProyectoSOAjedrez\cliente\WindowsFormsApplication1\obj\Debug\WindowsFormsApplication1.FormPrimeraBus.resources
+D:\Documentos\Uni\Tercer curs\SO\ProyectoSOAjedrez\cliente\WindowsFormsApplication1\obj\Debug\WindowsFormsApplication1.FormSegonsBus.resources
+D:\Documentos\Uni\Tercer curs\SO\ProyectoSOAjedrez\cliente\WindowsFormsApplication1\obj\Debug\WindowsFormsApplication1.Properties.Resources.resources
+D:\Documentos\Uni\Tercer curs\SO\ProyectoSOAjedrez\cliente\WindowsFormsApplication1\obj\Debug\clienteForm.csproj.GenerateResource.cache
+D:\Documentos\Uni\Tercer curs\SO\ProyectoSOAjedrez\cliente\WindowsFormsApplication1\obj\Debug\clienteForm.csproj.CoreCompileInputs.cache
+D:\Documentos\Uni\Tercer curs\SO\ProyectoSOAjedrez\cliente\WindowsFormsApplication1\obj\Debug\WindowsFormsApplication1.exe
+D:\Documentos\Uni\Tercer curs\SO\ProyectoSOAjedrez\cliente\WindowsFormsApplication1\obj\Debug\WindowsFormsApplication1.pdb
