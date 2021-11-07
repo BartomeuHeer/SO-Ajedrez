@@ -1,6 +1,8 @@
-CREATE DATABASE IF NOT EXISTS ajerez_db;
+DROP DATABASE if exists ajedrez_db;
 
+CREATE DATABASE IF NOT EXISTS ajedrez_db;
 
+USE ajedrez_db;
 
 CREATE TABLE IF NOT EXISTS jugador (
 
@@ -11,7 +13,9 @@ CREATE TABLE IF NOT EXISTS jugador (
 	apellido1 VARCHAR(20) NOT NULL,
 
 	apellido2 VARCHAR(20),
+
 	user_name VARCHAR(20) NOT NULL,
+
 	password VARCHAR(20) NOT NULL UNIQUE,
 
 	edat INT NOT NULL,
@@ -32,9 +36,9 @@ CREATE TABLE IF NOT EXISTS partidas (
 
 	ganador INT NOT NULL,
 
-	PRIMARY KEY (id),
+	FOREIGN KEY (ganador) REFERENCES jugador(id),
 
-	FOREIGN KEY (ganador) REFERENCES jugador(id)
+	PRIMARY KEY (id)
 
 	);
 
@@ -58,54 +62,54 @@ CREATE TABLE IF NOT EXISTS resultado (
 
 INSERT INTO jugador VALUES 
 
-	(0,"barto","heer","salva","barto","admin1",23),
+	(NULL,"barto","heer","salva","tolo","admin1",23),
 
-	(1,"marc","cuadrado","batlle","marc","admin2",20),
+	(NULL,"marc","cuadrado","batlle","marc","admin2",20),
 
-	(2,"omar","fallouk","ferrer","omar","admin3",20);
+	(NULL,"omar","fallouk","ferrer","omar","admin3",20);
 
 	
 
 INSERT INTO partidas VALUES 
 
-	(0,'2021-03-21 10:03:21','01:03:21',0),
+	(NULL,'2021-03-21 10:03:21','01:03:21',1),
 
-	(1,'2019-07-04 21:44:21','00:23:21',2),
+	(NULL,'2019-07-04 21:44:21','00:23:21',3),
 
-	(2,'2020-12-11 16:02:22','00:46:21',2),
+	(NULL,'2020-12-11 16:02:22','00:46:21',3),
 
-	(3,'2015-06-23 14:25:54','00:28:21',1),
+	(NULL,'2015-06-23 14:25:54','00:28:21',2),
 
-	(4,'2021-04-05 23:12:05','01:11:21',0),
+	(NULL,'2021-04-05 23:12:05','01:11:21',1),
 
-	(5,'2017-10-09 08:35:13','01:47:21',1);
+	(NULL,'2017-10-09 08:35:13','01:47:21',2);
 
 	
 
 INSERT INTO resultado VALUES
 
-	(0,0,33),
+	(1,1,33),
 
-	(1,0,21),
+	(2,1,21),
 
-	(0,1,25),
+	(1,2,25),
 
-	(2,1,44),
+	(3,2,44),
 
-	(2,2,35),
+	(3,3,35),
 
-	(1,2,32),
+	(2,3,32),
 
-	(0,3,21),
+	(1,4,21),
 
-	(1,3,28),
+	(2,4,28),
 
-	(2,4,31),
+	(3,5,31),
 
-	(0,4,33),
+	(1,5,33),
 
-	(1,5,39),
+	(2,6,39),
 
-	(2,5,27);
+	(3,6,27);
 
 	

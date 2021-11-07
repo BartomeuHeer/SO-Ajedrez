@@ -55,6 +55,10 @@ namespace WindowsFormsApplication1
             this.rb3 = new System.Windows.Forms.RadioButton();
             this.btndesc = new System.Windows.Forms.Button();
             this.btBuscar = new System.Windows.Forms.Button();
+            this.btnConec = new System.Windows.Forms.Button();
+            this.dataGridConect = new System.Windows.Forms.DataGridView();
+            this.column1 = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            ((System.ComponentModel.ISupportInitialize)(this.dataGridConect)).BeginInit();
             this.SuspendLayout();
             // 
             // btLogin
@@ -315,11 +319,38 @@ namespace WindowsFormsApplication1
             this.btBuscar.Visible = false;
             this.btBuscar.Click += new System.EventHandler(this.btBuscar_Click);
             // 
+            // btnConec
+            // 
+            this.btnConec.Location = new System.Drawing.Point(624, 4);
+            this.btnConec.Name = "btnConec";
+            this.btnConec.Size = new System.Drawing.Size(96, 34);
+            this.btnConec.TabIndex = 26;
+            this.btnConec.Text = "Conectados";
+            this.btnConec.UseVisualStyleBackColor = true;
+            this.btnConec.Click += new System.EventHandler(this.btnConec_Click);
+            // 
+            // dataGridConect
+            // 
+            this.dataGridConect.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
+            this.dataGridConect.Columns.AddRange(new System.Windows.Forms.DataGridViewColumn[] {
+            this.column1});
+            this.dataGridConect.Location = new System.Drawing.Point(624, 44);
+            this.dataGridConect.Name = "dataGridConect";
+            this.dataGridConect.Size = new System.Drawing.Size(256, 409);
+            this.dataGridConect.TabIndex = 27;
+            // 
+            // column1
+            // 
+            this.column1.HeaderText = "Nombre Jugador Conectado";
+            this.column1.Name = "column1";
+            // 
             // FormInicio
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(694, 540);
+            this.ClientSize = new System.Drawing.Size(892, 540);
+            this.Controls.Add(this.dataGridConect);
+            this.Controls.Add(this.btnConec);
             this.Controls.Add(this.btBuscar);
             this.Controls.Add(this.btndesc);
             this.Controls.Add(this.rb3);
@@ -348,6 +379,7 @@ namespace WindowsFormsApplication1
             this.Controls.Add(this.btLogin);
             this.Name = "FormInicio";
             this.Text = "FormInicio";
+            ((System.ComponentModel.ISupportInitialize)(this.dataGridConect)).EndInit();
             this.ResumeLayout(false);
             this.PerformLayout();
 
@@ -381,5 +413,8 @@ namespace WindowsFormsApplication1
         private System.Windows.Forms.RadioButton rb3;
         private System.Windows.Forms.Button btndesc;
         private System.Windows.Forms.Button btBuscar;
+        private System.Windows.Forms.Button btnConec;
+        private System.Windows.Forms.DataGridView dataGridConect;
+        private System.Windows.Forms.DataGridViewTextBoxColumn column1;
     }
 }

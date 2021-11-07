@@ -71,6 +71,12 @@
     <Compile Include="FormPrimeraBus.Designer.cs">
       <DependentUpon>FormPrimeraBus.cs</DependentUpon>
     </Compile>
+    <Compile Include="FormTerceraBus.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="FormTerceraBus.Designer.cs">
+      <DependentUpon>FormTerceraBus.cs</DependentUpon>
+    </Compile>
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <EmbeddedResource Include="FormInicio.resx">

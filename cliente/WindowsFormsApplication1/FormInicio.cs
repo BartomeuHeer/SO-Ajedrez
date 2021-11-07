@@ -56,7 +56,7 @@ namespace WindowsFormsApplication1
             //Creamos un IPEndPoint con el ip del servidor y puerto del servidor 
             //al que deseamos conectarnos
             IPAddress direc = IPAddress.Parse("192.168.56.102");
-            IPEndPoint ipep = new IPEndPoint(direc, 9040);
+            IPEndPoint ipep = new IPEndPoint(direc, 9050);
 
 
             //Creamos el socket 
@@ -203,6 +203,26 @@ namespace WindowsFormsApplication1
             server.Shutdown(SocketShutdown.Both);
             server.Close();
             MessageBox.Show("Desconexion del servidor completada");
+        }
+
+        private void btnConec_Click(object sender, EventArgs e)
+        {
+            string mensaje = "6/";
+            byte[] msg = Encoding.ASCII.GetBytes(mensaje);
+            server.Send(msg);
+
+            //Recibimos la respuesta del servidor
+            byte[] msg2 = new byte[80];
+            server.Receive(msg2);
+            mensaje = Encoding.ASCII.GetString(msg2).Split('\0')[0];
+            int total = Int32.Parse(mensaje.Split('/')[0]);
+            string[] info = mensaje.Split('/');
+            for(int i = 1; i <= total; i++)
+            {
+                dataGridConect.Rows.Add();
+                dataGridConect.Rows[i].Cells[0].Value = info[i];
+            }
+           
         }
     }
 }
