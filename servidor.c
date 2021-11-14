@@ -12,7 +12,7 @@ MYSQL *conn;
 MYSQL_RES *resultado;
 MYSQL_ROW row;
 pthread_mutex_t mutex = PTHREAD_MUTEX_INITIALIZER;
-int contador;
+//int contador;
 
 typedef struct{
 	int id;
@@ -40,8 +40,11 @@ typedef struct{
 	Conectado conectados[100];
 }ListaConectados;
 
+
 ListaJugadores listaJug;
 ListaConectados listaConect;
+
+//listaConect.num=0;
 
 int conexion_db (){
 	conn = mysql_init(NULL);
@@ -60,28 +63,23 @@ int conexion_db (){
 	return 0;
 }
 
- void *AtenderCliente(void *socket){
+ void *AtenderCliente(int *socket){
 	
 	 char peticion[512];
 	 char respuesta[512];
 	 char consulta[250];
 	 char peticion_num[512];
-	
-	 int sock_conn;
-	 int *s;
-	
-	 s = (int *) socket;
-	
-	 sock_conn = s;
+	 int err;
+	 char notificacion[512];
 	
 	 int terminar =0;
-	 printf("%d\n",sock_conn);
+	
 	 // Entramos en un bucle para atender todas las peticiones de este cliente
 	 //hasta que se desconecte
 	 while (terminar ==0)
 	 {
 		 // Ahora recibimos la petici?n
-		int ret=read(sock_conn,peticion_num, sizeof(peticion_num));
+		int ret=read(socket,peticion_num, sizeof(peticion_num));
 		 printf ("Recibido\n");
 		 
 		 // Tenemos que a?adirle la marca de fin de string 
@@ -97,47 +95,69 @@ int conexion_db (){
 		 switch (codigo)
 		 {
 		 case 1:	
-			 strcpy(peticion,strtok(NULL,"\0"));
-			 sprintf(respuesta,"%d", iniciar_sesion(peticion));
+			strcpy(peticion,strtok(NULL,"\0"));
+			sprintf(respuesta,"1|%d", iniciar_sesion(peticion));
+			pthread_mutex_lock( &mutex ); //No me interrumpas ahora
+			err = ponConectados(row[1],socket);
+			//int k = 0;
+			//printf("%s\n",row[1]);
+			pthread_mutex_unlock( &mutex); //ya puedes interrumpirme
+			if(err == -1)
+				sprintf(respuesta,"1|%d",-2);
 			 // Enviamos respuesta
-			 write (sock_conn,respuesta, strlen(respuesta));
-			 break;
+			//printf("%s\n",respuesta);
+			write (socket,respuesta, strlen(respuesta));
+			notificarConectados(notificacion);
+			break;
 		 case 2:
-			
+			 /*pthread_mutex_lock( &mutex ); //No me interrumpas ahora
+			 contador = contador +1;
+			 pthread_mutex_unlock( &mutex); //ya puedes interrumpirme*/
 			 break;
 		 case 3:
 			 
 			 if(primera_consulta(respuesta) == 0)
 				 // Enviamos respuesta
-				 write (sock_conn,respuesta, strlen(respuesta));
+				 write (socket,respuesta, strlen(respuesta));
+				notificarConectados(notificacion);
 			 break;
 		 case 4:
 			 if(segunda_consulta(respuesta) == 0)
 				 // Enviamos respuesta
-				 write (sock_conn,respuesta, strlen(respuesta));
+				 write (socket,respuesta, strlen(respuesta));
+			     notificarConectados(notificacion);
 			 break;
 		 case 5:
 			 if(tercera_consulta(respuesta) == 0)
 				 // Enviamos respuesta
-				 write (sock_conn,respuesta, strlen(respuesta));
+				 write (socket,respuesta, strlen(respuesta));
 			 break;
-			 break;
-		 case 6:
+		 /*case 6:
 			 dameConectados(respuesta);
 			 // Enviamos respuesta
-			 write (sock_conn,respuesta, strlen(respuesta));
-			 break;
+			 write (socket,respuesta, strlen(respuesta));
+			 break;*/
 		 default:
 			 pthread_mutex_lock( &mutex ); //No me interrumpas ahora
-			 int err = quitaConectados(sock_conn);
+			 int err = quitaConectados(socket);
 			 pthread_mutex_unlock( &mutex); //ya puedes interrumpirme
 			 terminar = 1;
 			 break;
 		 }
 	 }
 	 // Se acabo el servicio para este cliente
-	 close(sock_conn);
+	 close(socket);
+	 pthread_exit(0);
  }
+ 
+ void notificarConectados(char notificacion[]){
+	dameConectados(notificacion);
+	printf("%s\n",notificacion);
+	for(int i = 0;i<listaConect.num;i++){
+		write (listaConect.conectados[i].socket,notificacion, strlen(notificacion));
+	}
+ }
+ 
 int iniciar_sesion(char peticion[],int socket) 
 {
 	char username[35];
@@ -163,9 +183,6 @@ int iniciar_sesion(char peticion[],int socket)
 	}
 	else {
 		printf ("Consulta correcta\n");
-		pthread_mutex_lock( &mutex ); //No me interrumpas ahora
-		ponConectados(listaConect,row[1],socket);
-		pthread_mutex_unlock( &mutex); //ya puedes interrumpirme
 		return 0;
 	}
 }
@@ -181,6 +198,7 @@ int ponConectados(char nombre[50], int socket){
 		strcpy(listaConect.conectados[listaConect.num].nombre,nombre);
 		listaConect.conectados[listaConect.num].socket = socket;
 		listaConect.num++;
+		
 		return 0;
 	}
 }
@@ -200,13 +218,18 @@ int quitaConectados(int socket){
 	return -1;
 }
 
-void dameConectados(char respuesta[]){
+void dameConectados(char notificacion[]){
 	int i = 0;
-	sprintf(respuesta,"%d/",listaConect.num);
+	
+	sprintf(notificacion,"6|%d/",listaConect.num);
+	printf("%d\n",listaConect.num);
 	while(i < listaConect.num){
-		sprintf(respuesta,"%s%s/",respuesta,listaConect.conectados[i].nombre);
+		printf("%s\n",listaConect.conectados[i].nombre);
+		sprintf(notificacion,"%s%s/",notificacion,listaConect.conectados[i].nombre);
 		i++;
 	}
+	notificacion[strlen(notificacion)-1]== NULL;
+	printf("%s\n",notificacion);
 }
 
 int primera_consulta(char respuesta[]){
@@ -220,7 +243,7 @@ int primera_consulta(char respuesta[]){
 	
 	if (row == NULL){
 		printf ("No se han obtenido datos en la consulta\n");
-		sprintf(respuesta, "%d",-2);
+		sprintf(respuesta, "3|%d",-2);
 	}
 	else {
 		int i = 0;
@@ -229,8 +252,9 @@ int primera_consulta(char respuesta[]){
 			row = mysql_fetch_row (resultado);
 			i++;
 		}
-		sprintf(respuesta,"%d/%s",i,respuesta);
 		respuesta[strlen(respuesta)-1] = NULL;
+		sprintf(respuesta,"3|%d/%s",i,respuesta);
+		
 	}
 	printf ("Respuesta: %s\n", respuesta);
 	return 0;
@@ -245,7 +269,7 @@ int segunda_consulta(char respuesta[]){
 	row = mysql_fetch_row (resultado);
 	if (row == NULL){
 		printf ("No se han obtenido datos en la consulta\n");
-		sprintf(respuesta, "%d",-2);
+		sprintf(respuesta, "4|%d",-2);
 	}
 	else {
 		int total = mysql_num_fields(resultado);
@@ -255,6 +279,7 @@ int segunda_consulta(char respuesta[]){
 			row = mysql_fetch_row (resultado);
 		}
 		respuesta[strlen(respuesta)-1] = "\0";
+		
 	}
 	printf ("Respuesta: %s\n", respuesta);
 	return 0;
@@ -290,7 +315,6 @@ int main(int argc, char **argv)
 	int sock_conn, sock_listen;
 	struct sockaddr_in serv_adr;
 	
-	
 	// INICIALITZACIONS
 	// Obrim el socket
 	if ((sock_listen = socket(AF_INET, SOCK_STREAM, 0)) < 0)
@@ -309,18 +333,17 @@ int main(int argc, char **argv)
 	if (listen(sock_listen, 3) < 0)
 		printf("Error en el Listen");
 	conexion_db();
-	pthread_t thread[100];
+	pthread_t thread[50];
 	int i = 0;
 	// Bucle infinito
 	for (;;){  
 		printf ("Escuchando\n");
-		
 		sock_conn = accept(sock_listen, NULL, NULL);
 		printf ("He recibido conexion\n");
 		//sock_conn es el socket que usaremos para este cliente
 		// Ahora recibimos la petici?n
 		listaJug.jugadores[i].sock = sock_conn;
-		pthread_create(&thread,NULL,AtenderCliente(sock_conn),listaJug.jugadores[i].sock);
+		pthread_create(&thread[i],NULL,AtenderCliente,listaJug.jugadores[i].sock);
 		i++;
 	}
 }

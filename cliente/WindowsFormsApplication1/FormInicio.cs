@@ -8,16 +8,19 @@ using System.Text;
 using System.Windows.Forms;
 using System.Net;
 using System.Net.Sockets;
-
+using System.Threading;
 namespace WindowsFormsApplication1
 {
     public partial class FormInicio : Form
     {
         Socket server;
-        //bool conectado = false;
+        Thread atender;
+        
         public FormInicio()
         {
             InitializeComponent();
+            CheckForIllegalCrossThreadCalls = false; //Necesario para que los elementos de los formularios puedan ser
+            //accedidos desde threads diferentes a los que los crearon
         }
         private void show_inicio()
         {
@@ -51,6 +54,102 @@ namespace WindowsFormsApplication1
             btBuscar.Visible = true;
         }
 
+        private void AtenderServidor()
+        {
+            while (true)
+            {
+                //Recibimos mensaje del servidor
+                byte[] msg2 = new byte[80];
+                server.Receive(msg2);
+                string[] trozos = Encoding.ASCII.GetString(msg2).Split('|');
+                int codigo = Convert.ToInt32(trozos[0]);
+                string mensaje = trozos[1].Split('\0')[0];
+                
+                switch (codigo)
+                {
+                    case 1:  //respuesta del log in
+
+                        if (mensaje == "0")
+                        {
+                            MessageBox.Show("Inicio de sesion correcto");
+                            show_consultas();
+                        }
+                        else if (mensaje == "-1")
+                            MessageBox.Show("Inicio de sesion incorrecto");
+                        else
+                            MessageBox.Show("Hay demasiados jugadores conectados");
+                        break;
+                    case 2:      //respuesta del registro
+
+                        if (mensaje == "0")
+                        {
+                            MessageBox.Show("Registro correcto");
+                        }
+                        else
+                        {
+                            MessageBox.Show("Registro incorrecto");
+                        }
+                        break;
+                    case 3:       //Respuesta primera consulta
+                        int total;
+                        string[] info;
+                        if (mensaje == "-2")
+                            MessageBox.Show("No se han encontrado datos para esta consulta");
+                        else if (mensaje == "-1")
+                            MessageBox.Show("Error al hacer la consulta");
+                        else
+                        {
+                            total = Int32.Parse(mensaje.Split('/')[0]);
+                            info = mensaje.Split('/');
+                            string[] nombres = new string[50];
+                            string[] apellido1 = new string[50];
+                            string[] apellido2 = new string[50];
+                            for (int i = 1; i <= total; i++)
+                            {
+                                nombres[i - 1] = info[i].Split(',')[0];
+                                apellido1[i - 1] = info[i].Split(',')[1];
+                                apellido2[i - 1] = info[i].Split(',')[2];
+                            }
+                            FormPrimeraBus sel = new FormPrimeraBus(nombres, apellido1, apellido2, total);
+                            sel.ShowDialog();
+                        }
+                        break;
+                    case 4:     //Respuesta segunda consulta
+                       
+                        if (mensaje == "-2")
+                            MessageBox.Show("No se han encontrado datos para esta consulta");
+                        else
+                        {
+                            total = Int32.Parse(mensaje.Split('/')[0]);
+                            info = mensaje.Split('/');
+                            string[] nom = new string[50];
+                            string[] cognom1 = new string[50];
+                            string[] cognom2 = new string[50];
+                            for (int i = 1; i <= total; i++)
+                            {
+                                int v = i - 1;
+                                nom[v] = info[i].Split(',')[0];
+                                cognom1[i - 1] = info[i].Split(',')[1];
+                                cognom2[i - 1] = info[i].Split(',')[2];
+                            }
+                            FormPrimeraBus sel = new FormPrimeraBus(nom, cognom1, cognom2, total);
+                        }
+                        break;
+                    case 5: //Respuesta tercera consulta
+
+                        break;
+                    case 6:
+                        total = Int32.Parse(mensaje.Split('/')[0]);
+                        info = mensaje.Split('/');
+                        for (int i = 1; i <= total; i++)
+                        {
+                            dataGridConect.Rows.Add();
+                            dataGridConect.Rows[i].Cells[0].Value = info[i];
+                        }
+                        break;
+                }
+            }
+        }
         private void btnConect_Click(object sender, EventArgs e)
         {
             //Creamos un IPEndPoint con el ip del servidor y puerto del servidor 
@@ -74,6 +173,10 @@ namespace WindowsFormsApplication1
                 this.BackColor = Color.Red;
                 MessageBox.Show("No he podido conectar con el servidor");
             }
+            //pongo en marcha el thread que atenderá los mensajes del servidor
+            ThreadStart ts = delegate { AtenderServidor(); };
+            atender = new Thread(ts);
+            atender.Start();
         }
 
         private void btLogin_Click(object sender, EventArgs e)
@@ -82,20 +185,6 @@ namespace WindowsFormsApplication1
             string mensaje = "1/" + tbUsernameLI.Text + "/" + tbPassLI.Text;
             byte[] msg = Encoding.ASCII.GetBytes(mensaje);
             server.Send(msg);
-
-            //Recibimos la respuesta del servidor
-            byte[] msg2 = new byte[80];
-            server.Receive(msg2);
-            mensaje = Encoding.ASCII.GetString(msg2).Split('\0')[0];
-            
-            if (mensaje == "0")
-            {
-                MessageBox.Show("Inicio de sesion correcto");
-                show_consultas();
-            }
-            else
-                MessageBox.Show("Inicio de sesion incorrecto");
-             
         }
 
         private void btRegister_Click(object sender, EventArgs e)
@@ -103,22 +192,6 @@ namespace WindowsFormsApplication1
             string mensaje = "2/" + tbName.Text + "/" + tbLN1.Text + "/" + tbLN2.Text + "/" + tbAge.Text + "/" + tbUserNameR.Text + "/" + tbPassR.Text;
             byte[] msg = Encoding.ASCII.GetBytes(mensaje);
             server.Send(msg);
-
-            //Recibimos la respuesta del servidor
-            byte[] msg2 = new byte[80];
-            server.Receive(msg2);
-            mensaje = Encoding.ASCII.GetString(msg2).Split('\0')[0];
-            if (mensaje == "0")
-            {
-                MessageBox.Show("Registro correcto");
-            }
-            else
-            {
-                MessageBox.Show("Registro incorrecto");
-                return;
-            }
-               
-            
         }
 
         
@@ -131,30 +204,6 @@ namespace WindowsFormsApplication1
                 byte[] msg = Encoding.ASCII.GetBytes(mensaje);
                 server.Send(msg);
 
-                //Recibimos la respuesta del servidor
-                byte[] msg2 = new byte[80];
-                server.Receive(msg2);
-                mensaje = Encoding.ASCII.GetString(msg2).Split('\0')[0];
-                if (mensaje == "-2")
-                    MessageBox.Show("No se han encontrado datos para esta consulta");
-                else if(mensaje == "-1")
-                    MessageBox.Show("Error al hacer la consulta");
-                else
-                {
-                    int total = Int32.Parse(mensaje.Split('/')[0]);
-                    string[] info = mensaje.Split('/');
-                    string[] nombres = new string[50];
-                    string[] apellido1 = new string[50];
-                    string[] apellido2 = new string[50];
-                    for (int i = 1; i <= total; i++)
-                    {
-                        nombres[i - 1] = info[i].Split(',')[0];
-                        apellido1[i - 1] = info[i].Split(',')[1];
-                        apellido2[i - 1] = info[i].Split(',')[2];
-                    }
-                    FormPrimeraBus sel = new FormPrimeraBus(nombres, apellido1, apellido2, total);
-                    sel.ShowDialog();
-                }
             }
             else if (rb2.Checked)
             {
@@ -162,31 +211,6 @@ namespace WindowsFormsApplication1
                 // Enviamos al servidor el nombre tecleado
                 byte[] msg = Encoding.ASCII.GetBytes(mensaje);
                 server.Send(msg);
-
-                //Recibimos la respuesta del servidor
-                byte[] msg2 = new byte[80];
-                server.Receive(msg2);
-                mensaje = Encoding.ASCII.GetString(msg2).Split('\0')[0];
-                if (mensaje == "-2")
-                    MessageBox.Show("No se han encontrado datos para esta consulta");
-                else
-                {
-                    int total = Int32.Parse(mensaje.Split('/')[0]);
-                    string[] info = mensaje.Split('/');
-                    string[] nom = new string[50];
-                    string[] cognom1 = new string[50];
-                    string[] cognom2 = new string[50];
-                    for (int i = 1; i <= total; i++)
-                    {
-                        int v = i - 1;
-                        nom[v] = info[i].Split(',')[0];
-                        cognom1[i - 1] = info[i].Split(',')[1];
-                        cognom2[i - 1] = info[i].Split(',')[2];
-                    }
-                    FormPrimeraBus sel = new FormPrimeraBus(nom, cognom1, cognom2, total);
-                }
-                
-
             }
         }
 
@@ -199,30 +223,13 @@ namespace WindowsFormsApplication1
             server.Send(msg);
 
             // Nos desconectamos
-
+            atender.Abort();
+            this.BackColor = Color.Gray;
             server.Shutdown(SocketShutdown.Both);
             server.Close();
             MessageBox.Show("Desconexion del servidor completada");
         }
 
-        private void btnConec_Click(object sender, EventArgs e)
-        {
-            string mensaje = "6/";
-            byte[] msg = Encoding.ASCII.GetBytes(mensaje);
-            server.Send(msg);
-
-            //Recibimos la respuesta del servidor
-            byte[] msg2 = new byte[80];
-            server.Receive(msg2);
-            mensaje = Encoding.ASCII.GetString(msg2).Split('\0')[0];
-            int total = Int32.Parse(mensaje.Split('/')[0]);
-            string[] info = mensaje.Split('/');
-            for(int i = 1; i <= total; i++)
-            {
-                dataGridConect.Rows.Add();
-                dataGridConect.Rows[i].Cells[0].Value = info[i];
-            }
-           
-        }
+        
     }
 }
