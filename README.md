@@ -10,10 +10,22 @@ Rol de comunicador: Bartomeu Heer
 https://youtu.be/XiNoSTKxCA4
 
 
--Segona versio
+-Segunda version
 
 Rol de manager: Bartomeu Heer 
 
 Rol de Verificador: Marc Cuadrado
 
 Rol de comunicador: Omar Fallouk
+
+https://youtu.be/P2L0ei3mEOk
+
+-Tercera version
+
+Rol de manager: Omar Fallouk
+
+Rol de Verificador: Bartomeu Heer 
+
+Rol de comunicador: Marc Cuadrado
+
+https://drive.google.com/file/d/1z4e12HosQIdJIID5JKedFT1vnflPfVDO/view?usp=sharing
