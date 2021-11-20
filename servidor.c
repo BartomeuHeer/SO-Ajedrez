@@ -43,7 +43,6 @@ typedef struct{
 
 ListaJugadores listaJug;
 ListaConectados listaConect;
-
 //listaConect.num=0;
 
 int conexion_db (){
@@ -63,14 +62,18 @@ int conexion_db (){
 	return 0;
 }
 
- void *AtenderCliente(int *socket){
+ void *AtenderCliente(void *soc_ket){
+	int *s;
+	int socket;
+	s = (int *) soc_ket;
+	socket = *s;
 	
 	 char peticion[512];
 	 char respuesta[512];
 	 char consulta[250];
 	 char peticion_num[512];
 	 int err;
-	 char notificacion[512];
+	
 	
 	 int terminar =0;
 	
@@ -107,7 +110,7 @@ int conexion_db (){
 			 // Enviamos respuesta
 			//printf("%s\n",respuesta);
 			write (socket,respuesta, strlen(respuesta));
-			notificarConectados(notificacion);
+			notificarConectados();
 			break;
 		 case 2:
 			 /*pthread_mutex_lock( &mutex ); //No me interrumpas ahora
@@ -119,13 +122,13 @@ int conexion_db (){
 			 if(primera_consulta(respuesta) == 0)
 				 // Enviamos respuesta
 				 write (socket,respuesta, strlen(respuesta));
-				notificarConectados(notificacion);
+				notificarConectados();
 			 break;
 		 case 4:
 			 if(segunda_consulta(respuesta) == 0)
 				 // Enviamos respuesta
 				 write (socket,respuesta, strlen(respuesta));
-			     notificarConectados(notificacion);
+			     notificarConectados();
 			 break;
 		 case 5:
 			 if(tercera_consulta(respuesta) == 0)
@@ -150,10 +153,12 @@ int conexion_db (){
 	 pthread_exit(0);
  }
  
- void notificarConectados(char notificacion[]){
+ void notificarConectados(){
+	 char notificacion[512];
 	dameConectados(notificacion);
 	printf("%s\n",notificacion);
-	for(int i = 0;i<listaConect.num;i++){
+	int i;
+	for(i = 0;i<listaConect.num;i++){
 		write (listaConect.conectados[i].socket,notificacion, strlen(notificacion));
 	}
  }
@@ -203,6 +208,10 @@ int ponConectados(char nombre[50], int socket){
 	}
 }
 
+int dameNombreCon(int soc){
+	
+}
+
 int quitaConectados(int socket){
 	int i =0;
 	while(i < listaConect.num){
@@ -228,11 +237,12 @@ void dameConectados(char notificacion[]){
 		sprintf(notificacion,"%s%s/",notificacion,listaConect.conectados[i].nombre);
 		i++;
 	}
-	notificacion[strlen(notificacion)-1]== NULL;
+	notificacion[strlen(notificacion)-1]= NULL;
 	printf("%s\n",notificacion);
 }
 
 int primera_consulta(char respuesta[]){
+	respuesta[0] = '\0';
 	int err=mysql_query (conn,"select distinct jugador.nombre, jugador.apellido1, jugador.apellido2 from (jugador,partidas,resultado) where partidas.duracion < '01:00:00' AND partidas.ganador = jugador.id AND partidas.id = resultado.idP AND resultado.idJ = jugador.id");
 	if (err!=0) { 
 		printf ("Error al consultar datos de la base %u %s\n",mysql_errno(conn), mysql_error(conn)); 
@@ -246,21 +256,20 @@ int primera_consulta(char respuesta[]){
 		sprintf(respuesta, "3|%d",-2);
 	}
 	else {
-		int i = 0;
+		int cont = 0;
+		char res[200];
 		while(row != NULL){
-			sprintf(respuesta,"%s%s,%s,%s/",respuesta,row[0],row[1],row[2]);
+			sprintf(res,"%s%s,%s,%s/",res,row[0],row[1],row[2]);
 			row = mysql_fetch_row (resultado);
-			i++;
+			cont++;
 		}
-		respuesta[strlen(respuesta)-1] = NULL;
-		sprintf(respuesta,"3|%d/%s",i,respuesta);
-		
+		respuesta[strlen(respuesta)-1] = '\0';
+		sprintf(respuesta,"3|%d/%s",cont,res);
 	}
-	printf ("Respuesta: %s\n", respuesta);
 	return 0;
 }
 int segunda_consulta(char respuesta[]){
-	int err=mysql_query (conn, "select jugador.nombre from (jugador,partidas,resultado) where jugador.id = resultado.idJ and resultado.puntos = (select MAX(resultado.puntos) from (resultado)) and jugador.id = partidas.ganador");
+	int err=mysql_query (conn, "select jugador.nombre, jugador.apellido1, jugador.apellido2 from (jugador,partidas,resultado) where jugador.id = resultado.idJ and resultado.puntos = (select MAX(resultado.puntos) from (resultado)) and jugador.id = partidas.ganador");
 	if (err!=0) { 	
 		printf ("Error al consultar datos de la base %u %s\n",mysql_errno(conn), mysql_error(conn)); 
 		return -1; 
@@ -272,16 +281,15 @@ int segunda_consulta(char respuesta[]){
 		sprintf(respuesta, "4|%d",-2);
 	}
 	else {
-		int total = mysql_num_fields(resultado);
-		sprintf(respuesta,"%d/",total);
+		int cont = 0;
+		char res[200];
 		while(row != NULL){
-			sprintf(respuesta,"%s,%s,%s,%s/",respuesta,row[0],row[1],row[2]);
+			sprintf(res,"%s,%s,%s,%s/",res,row[0],row[1],row[2]);
 			row = mysql_fetch_row (resultado);
 		}
 		respuesta[strlen(respuesta)-1] = "\0";
-		
+		sprintf(respuesta,"4|%d/%s",cont,res);
 	}
-	printf ("Respuesta: %s\n", respuesta);
 	return 0;
 }
 int tercera_consulta(char respuesta[]){
@@ -297,16 +305,15 @@ int tercera_consulta(char respuesta[]){
 		sprintf(respuesta, "%d",-2);
 	}
 	else {
-		int total = mysql_num_fields(resultado)-1;
-		printf("%d\n",total);
-		sprintf(respuesta,"%d/",total);
+		int cont = 0;
+		char res[200];
 		while(row != NULL){
-			sprintf(respuesta,"%s%s,%s,%s/",respuesta,row[0],row[1],row[2]);
+			sprintf(res,"%s%s,%s,%s/",res,row[0],row[1],row[2]);
 			row = mysql_fetch_row (resultado);
 		}
 		respuesta[strlen(respuesta)-1] = NULL;
+		sprintf(respuesta,"4|%d/%s",cont,res);
 	}
-	printf ("Respuesta: %s\n", respuesta);
 	return 0;
 }
 
@@ -326,7 +333,7 @@ int main(int argc, char **argv)
 	//htonl formatea el numero que recibe al formato necesario
 	serv_adr.sin_addr.s_addr = htonl(INADDR_ANY);
 	// establecemos el puerto de escucha
-	serv_adr.sin_port = htons(9050);
+	serv_adr.sin_port = htons(9060);
 	if (bind(sock_listen, (struct sockaddr *) &serv_adr, sizeof(serv_adr)) < 0)
 		printf ("Error al bind");
 	
@@ -334,16 +341,17 @@ int main(int argc, char **argv)
 		printf("Error en el Listen");
 	conexion_db();
 	pthread_t thread[50];
-	int i = 0;
+	int c = 0;
 	// Bucle infinito
 	for (;;){  
 		printf ("Escuchando\n");
+		printf ("%d\n",c);
 		sock_conn = accept(sock_listen, NULL, NULL);
 		printf ("He recibido conexion\n");
 		//sock_conn es el socket que usaremos para este cliente
 		// Ahora recibimos la petici?n
-		listaJug.jugadores[i].sock = sock_conn;
-		pthread_create(&thread[i],NULL,AtenderCliente,listaJug.jugadores[i].sock);
-		i++;
+		//listaConect.conectados[].sock = sock_conn;
+		pthread_create(&thread[c],NULL,AtenderCliente,&sock_conn);
+		c++;
 	}
 }

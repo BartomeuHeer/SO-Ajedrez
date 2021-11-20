@@ -57,6 +57,7 @@ namespace WindowsFormsApplication1
             this.btBuscar = new System.Windows.Forms.Button();
             this.dataGridConect = new System.Windows.Forms.DataGridView();
             this.column1 = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.btnInv = new System.Windows.Forms.Button();
             ((System.ComponentModel.ISupportInitialize)(this.dataGridConect)).BeginInit();
             this.SuspendLayout();
             // 
@@ -262,7 +263,7 @@ namespace WindowsFormsApplication1
             // rb1
             // 
             this.rb1.AutoSize = true;
-            this.rb1.Location = new System.Drawing.Point(403, 180);
+            this.rb1.Location = new System.Drawing.Point(297, 100);
             this.rb1.Name = "rb1";
             this.rb1.Size = new System.Drawing.Size(110, 17);
             this.rb1.TabIndex = 21;
@@ -274,7 +275,7 @@ namespace WindowsFormsApplication1
             // rb2
             // 
             this.rb2.AutoSize = true;
-            this.rb2.Location = new System.Drawing.Point(403, 217);
+            this.rb2.Location = new System.Drawing.Point(297, 137);
             this.rb2.Name = "rb2";
             this.rb2.Size = new System.Drawing.Size(118, 17);
             this.rb2.TabIndex = 22;
@@ -286,7 +287,7 @@ namespace WindowsFormsApplication1
             // rb3
             // 
             this.rb3.AutoSize = true;
-            this.rb3.Location = new System.Drawing.Point(403, 255);
+            this.rb3.Location = new System.Drawing.Point(297, 175);
             this.rb3.Name = "rb3";
             this.rb3.Size = new System.Drawing.Size(112, 17);
             this.rb3.TabIndex = 23;
@@ -298,9 +299,9 @@ namespace WindowsFormsApplication1
             // btndesc
             // 
             this.btndesc.BackColor = System.Drawing.Color.Red;
-            this.btndesc.Location = new System.Drawing.Point(403, 385);
+            this.btndesc.Location = new System.Drawing.Point(156, 12);
             this.btndesc.Name = "btndesc";
-            this.btndesc.Size = new System.Drawing.Size(115, 43);
+            this.btndesc.Size = new System.Drawing.Size(115, 37);
             this.btndesc.TabIndex = 24;
             this.btndesc.Text = "Desconectar";
             this.btndesc.UseVisualStyleBackColor = false;
@@ -309,7 +310,7 @@ namespace WindowsFormsApplication1
             // 
             // btBuscar
             // 
-            this.btBuscar.Location = new System.Drawing.Point(420, 300);
+            this.btBuscar.Location = new System.Drawing.Point(314, 220);
             this.btBuscar.Name = "btBuscar";
             this.btBuscar.Size = new System.Drawing.Size(93, 32);
             this.btBuscar.TabIndex = 25;
@@ -323,9 +324,9 @@ namespace WindowsFormsApplication1
             this.dataGridConect.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
             this.dataGridConect.Columns.AddRange(new System.Windows.Forms.DataGridViewColumn[] {
             this.column1});
-            this.dataGridConect.Location = new System.Drawing.Point(624, 44);
+            this.dataGridConect.Location = new System.Drawing.Point(514, 41);
             this.dataGridConect.Name = "dataGridConect";
-            this.dataGridConect.Size = new System.Drawing.Size(256, 409);
+            this.dataGridConect.Size = new System.Drawing.Size(323, 228);
             this.dataGridConect.TabIndex = 27;
             // 
             // column1
@@ -333,11 +334,21 @@ namespace WindowsFormsApplication1
             this.column1.HeaderText = "Nombre Jugador Conectado";
             this.column1.Name = "column1";
             // 
+            // btnInv
+            // 
+            this.btnInv.Location = new System.Drawing.Point(889, 52);
+            this.btnInv.Name = "btnInv";
+            this.btnInv.Size = new System.Drawing.Size(139, 40);
+            this.btnInv.TabIndex = 28;
+            this.btnInv.Text = "Invitar";
+            this.btnInv.UseVisualStyleBackColor = true;
+            // 
             // FormInicio
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(892, 540);
+            this.ClientSize = new System.Drawing.Size(1202, 658);
+            this.Controls.Add(this.btnInv);
             this.Controls.Add(this.dataGridConect);
             this.Controls.Add(this.btBuscar);
             this.Controls.Add(this.btndesc);
@@ -403,5 +414,6 @@ namespace WindowsFormsApplication1
         private System.Windows.Forms.Button btBuscar;
         private System.Windows.Forms.DataGridView dataGridConect;
         private System.Windows.Forms.DataGridViewTextBoxColumn column1;
+        private System.Windows.Forms.Button btnInv;
     }
 }

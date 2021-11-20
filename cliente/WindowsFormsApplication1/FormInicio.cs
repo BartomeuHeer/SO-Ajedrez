@@ -48,8 +48,11 @@ namespace WindowsFormsApplication1
         }
         private void show_consultas()
         {
-            rb1.Visible = true;
-            rb2.Visible = true;
+            rb1.Invoke(new MethodInvoker(delegate { rb1.Visible = true; }));
+            rb2.Invoke(new MethodInvoker(delegate { rb2.Visible = true; }));
+            rb3.Invoke(new MethodInvoker(delegate { rb3.Visible = true; }));
+            btBuscar.Invoke(new MethodInvoker(delegate { btBuscar.Visible = true; }));
+            
             rb3.Visible = true;
             btBuscar.Visible = true;
         }
@@ -155,7 +158,7 @@ namespace WindowsFormsApplication1
             //Creamos un IPEndPoint con el ip del servidor y puerto del servidor 
             //al que deseamos conectarnos
             IPAddress direc = IPAddress.Parse("192.168.56.102");
-            IPEndPoint ipep = new IPEndPoint(direc, 9050);
+            IPEndPoint ipep = new IPEndPoint(direc, 9060);
 
 
             //Creamos el socket 
