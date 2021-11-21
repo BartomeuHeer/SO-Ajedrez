@@ -29,3 +29,11 @@ Rol de Verificador: Bartomeu Heer
 Rol de comunicador: Marc Cuadrado
 
 https://drive.google.com/file/d/1z4e12HosQIdJIID5JKedFT1vnflPfVDO/view?usp=sharing
+
+-Cuarta vcersion
+
+Rol de manager: Bartomeu Heer 
+
+Rol de Verificador: Marc Cuadrado
+
+Rol de comunicador: Omar Fallouk
