@@ -37,4 +37,5 @@ Rol de manager: Bartomeu Heer
 Rol de Verificador: Marc Cuadrado
 
 Rol de comunicador: Omar Fallouk
+
 https://youtu.be/zpTUGPEw4Do
