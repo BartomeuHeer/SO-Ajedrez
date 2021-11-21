@@ -328,6 +328,7 @@ namespace WindowsFormsApplication1
             this.dataGridConect.Name = "dataGridConect";
             this.dataGridConect.Size = new System.Drawing.Size(323, 228);
             this.dataGridConect.TabIndex = 27;
+            this.dataGridConect.CellClick += new System.Windows.Forms.DataGridViewCellEventHandler(this.dataGridConect_CellClick);
             // 
             // column1
             // 
@@ -342,6 +343,7 @@ namespace WindowsFormsApplication1
             this.btnInv.TabIndex = 28;
             this.btnInv.Text = "Invitar";
             this.btnInv.UseVisualStyleBackColor = true;
+            this.btnInv.Click += new System.EventHandler(this.btnInv_Click);
             // 
             // FormInicio
             // 

@@ -12,7 +12,6 @@ MYSQL *conn;
 MYSQL_RES *resultado;
 MYSQL_ROW row;
 pthread_mutex_t mutex = PTHREAD_MUTEX_INITIALIZER;
-//int contador;
 
 typedef struct{
 	int id;
@@ -32,7 +31,7 @@ typedef struct{
 
 typedef struct{
 	int socket;
-	char nombre[];
+	char nombre[50];
 }Conectado;
 
 typedef struct{
@@ -40,9 +39,27 @@ typedef struct{
 	Conectado conectados[100];
 }ListaConectados;
 
+typedef struct{
+	char jugador1[50];
+	char jugador2[50];
+	int socket1;
+	int socket2;
+}Equipo;
 
+typedef struct{
+	//Equipo equipos[2];
+	Conectado jug[4];
+	int id;
+}Partida;
+
+ typedef struct{
+	 Partida partidas[100];
+	 int num;
+ }ListaPartidas;
+ 
 ListaJugadores listaJug;
 ListaConectados listaConect;
+ListaPartidas listaPart;
 //listaConect.num=0;
 
 int conexion_db (){
@@ -63,10 +80,11 @@ int conexion_db (){
 }
 
  void *AtenderCliente(void *soc_ket){
-	int *s;
-	int socket;
-	s = (int *) soc_ket;
-	socket = *s;
+	int socket = *(int *) soc_ket;
+	//int *s;
+	//int socket;
+	//s = (int *) soc_ket;
+	//socket = *s;
 	
 	 char peticion[512];
 	 char respuesta[512];
@@ -103,12 +121,10 @@ int conexion_db (){
 			pthread_mutex_lock( &mutex ); //No me interrumpas ahora
 			err = ponConectados(row[1],socket);
 			//int k = 0;
-			//printf("%s\n",row[1]);
 			pthread_mutex_unlock( &mutex); //ya puedes interrumpirme
 			if(err == -1)
 				sprintf(respuesta,"1|%d",-2);
 			 // Enviamos respuesta
-			//printf("%s\n",respuesta);
 			write (socket,respuesta, strlen(respuesta));
 			notificarConectados();
 			break;
@@ -135,15 +151,21 @@ int conexion_db (){
 				 // Enviamos respuesta
 				 write (socket,respuesta, strlen(respuesta));
 			 break;
-		 /*case 6:
-			 dameConectados(respuesta);
-			 // Enviamos respuesta
-			 write (socket,respuesta, strlen(respuesta));
-			 break;*/
+		 case 6:
+			 strcpy(peticion,strtok(NULL,"\0"));
+			 
+			 
+			 else{
+				 
+				 //sprintf(respuesta,"%"7);
+				// write(err, respuesta,strlen(respuesta));
+			 }
+			 break;
 		 default:
 			 pthread_mutex_lock( &mutex ); //No me interrumpas ahora
 			 int err = quitaConectados(socket);
 			 pthread_mutex_unlock( &mutex); //ya puedes interrumpirme
+			 notificarConectados();
 			 terminar = 1;
 			 break;
 		 }
@@ -153,10 +175,35 @@ int conexion_db (){
 	 pthread_exit(0);
  }
  
+ int invitacion(char nombres[],int socket){
+	 ListaConectados conAux;
+	 char nombre1[50];
+	 char nombre2[50];
+	 char nombre3[50];
+	 strcpy(nombre1,strtok(nombres,',');
+	 strcpy(nombre2,strtok(NULL,',');
+	 strcpy(nombre3,strtok(NULL,'\0');
+	 if(listaPart.num == 100)
+		 return -1;
+	 else{
+		 int i = 0;
+		 for(i; i<3;i++ ){
+			 int err = dameSockCon(peticion);
+			 if(err == -1) {
+				 strcpy(respuesta,-1);
+				 write(socket,respuesta,strlen(respuesta)); 
+			 }
+			 else{
+				 
+			 }
+		
+		 }
+	 }
+ }
+ 
  void notificarConectados(){
 	 char notificacion[512];
 	dameConectados(notificacion);
-	printf("%s\n",notificacion);
 	int i;
 	for(i = 0;i<listaConect.num;i++){
 		write (listaConect.conectados[i].socket,notificacion, strlen(notificacion));
@@ -203,13 +250,28 @@ int ponConectados(char nombre[50], int socket){
 		strcpy(listaConect.conectados[listaConect.num].nombre,nombre);
 		listaConect.conectados[listaConect.num].socket = socket;
 		listaConect.num++;
-		
 		return 0;
 	}
 }
 
-int dameNombreCon(int soc){
-	
+int dameNombreCon(int soc, char nombre[]){
+	int i;
+	for(i = 0; i < listaConect.num; i++){
+		if(listaConect.conectados[i].socket == soc){
+			strcpy(nombre, listaConect.conectados[i].nombre);
+			return 0;
+		}	
+	}
+	return -1;
+}
+
+int dameSockCon(char nombre[]){
+	int i;
+	for(i = 0; i < listaConect.num; i++){
+		if(strcmp(listaConect.conectados[i].nombre,nombre) == 0)
+			return listaConect.conectados[i].socket;
+	}
+	return -1;
 }
 
 int quitaConectados(int socket){
@@ -220,6 +282,8 @@ int quitaConectados(int socket){
 				strcpy(listaConect.conectados[i].nombre,listaConect.conectados[i+1].nombre);
 				listaConect.conectados[i].socket = listaConect.conectados[i+1].socket;
 			}
+			listaConect.conectados[i].nombre[0] = '\0';
+			listaConect.conectados[i].socket = 0;
 			return 0;
 		}
 		i++;
@@ -231,14 +295,14 @@ void dameConectados(char notificacion[]){
 	int i = 0;
 	
 	sprintf(notificacion,"6|%d/",listaConect.num);
-	printf("%d\n",listaConect.num);
+	//printf("%d\n",listaConect.num);
 	while(i < listaConect.num){
 		printf("%s\n",listaConect.conectados[i].nombre);
 		sprintf(notificacion,"%s%s/",notificacion,listaConect.conectados[i].nombre);
 		i++;
 	}
 	notificacion[strlen(notificacion)-1]= NULL;
-	printf("%s\n",notificacion);
+	//printf("%s\n",notificacion);
 }
 
 int primera_consulta(char respuesta[]){
@@ -350,7 +414,6 @@ int main(int argc, char **argv)
 		printf ("He recibido conexion\n");
 		//sock_conn es el socket que usaremos para este cliente
 		// Ahora recibimos la petici?n
-		//listaConect.conectados[].sock = sock_conn;
 		pthread_create(&thread[c],NULL,AtenderCliente,&sock_conn);
 		c++;
 	}

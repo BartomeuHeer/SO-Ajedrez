@@ -15,7 +15,7 @@ namespace WindowsFormsApplication1
     {
         Socket server;
         Thread atender;
-        
+        string invitados;
         public FormInicio()
         {
             InitializeComponent();
@@ -142,13 +142,17 @@ namespace WindowsFormsApplication1
 
                         break;
                     case 6:
+                        dataGridConect.Rows.Clear();
+                        dataGridConect.Refresh();
                         total = Int32.Parse(mensaje.Split('/')[0]);
                         info = mensaje.Split('/');
                         for (int i = 1; i <= total; i++)
                         {
-                            dataGridConect.Rows.Add();
-                            dataGridConect.Rows[i].Cells[0].Value = info[i];
+                            dataGridConect.Rows.Add(info[i]);
                         }
+                        break;
+                    case 7:
+
                         break;
                 }
             }
@@ -233,6 +237,26 @@ namespace WindowsFormsApplication1
             MessageBox.Show("Desconexion del servidor completada");
         }
 
-        
+        private void btnInv_Click(object sender, EventArgs e)
+        {
+            string mensaje;
+            if(dataGridConect.SelectedRows.Count!= 3)
+            {
+                MessageBox.Show("Selecciona 3 jugadores por favor.");
+            }
+            else
+            {
+                invitados = invitados.Remove(invitados.Length - 1);
+                for(int i = 0; i < dataGridConect.SelectedRows.Count; i++)
+                {
+                    mensaje = "6/" + invitados;
+                }
+            }
+        }
+
+        private void dataGridConect_CellClick(object sender, DataGridViewCellEventArgs e)
+        {
+            invitados = dataGridConect.Rows[e.RowIndex].Cells[0].Value.ToString() + ",";
+        }
     }
 }
