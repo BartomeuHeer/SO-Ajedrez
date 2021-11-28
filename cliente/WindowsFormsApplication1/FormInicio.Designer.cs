@@ -321,19 +321,23 @@ namespace WindowsFormsApplication1
             // 
             // dataGridConect
             // 
+            this.dataGridConect.AllowUserToAddRows = false;
+            this.dataGridConect.AllowUserToDeleteRows = false;
+            this.dataGridConect.AllowUserToOrderColumns = true;
             this.dataGridConect.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
             this.dataGridConect.Columns.AddRange(new System.Windows.Forms.DataGridViewColumn[] {
             this.column1});
             this.dataGridConect.Location = new System.Drawing.Point(514, 41);
             this.dataGridConect.Name = "dataGridConect";
+            this.dataGridConect.ReadOnly = true;
             this.dataGridConect.Size = new System.Drawing.Size(323, 228);
             this.dataGridConect.TabIndex = 27;
-            this.dataGridConect.CellClick += new System.Windows.Forms.DataGridViewCellEventHandler(this.dataGridConect_CellClick);
             // 
             // column1
             // 
             this.column1.HeaderText = "Nombre Jugador Conectado";
             this.column1.Name = "column1";
+            this.column1.ReadOnly = true;
             // 
             // btnInv
             // 

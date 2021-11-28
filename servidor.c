@@ -13,7 +13,7 @@ MYSQL_RES *resultado;
 MYSQL_ROW row;
 pthread_mutex_t mutex = PTHREAD_MUTEX_INITIALIZER;
 
-typedef struct{
+/*typedef struct{
 	int id;
 	char nombre[50];
 	char apellido1[50];
@@ -22,12 +22,12 @@ typedef struct{
 	char password[50];
 	int edat;
 	int sock;
-}Jugador;
+}Jugador;*/
 
-typedef struct{
+/*typedef struct{
 	int num;
 	Jugador jugadores[100];
-}ListaJugadores;
+}ListaJugadores;*/
 
 typedef struct{
 	int socket;
@@ -47,22 +47,20 @@ typedef struct{
 }Equipo;
 
 typedef struct{
-	//Equipo equipos[2];
-	Conectado jug[4];
-	int id;
+	Equipo equipos[2];
+	Conectado jugadores[4];
+	int estado;
 }Partida;
 
- typedef struct{
-	 Partida partidas[100];
-	 int num;
- }ListaPartidas;
  
-ListaJugadores listaJug;
+//ListaJugadores listaJug;
 ListaConectados listaConect;
-ListaPartidas listaPart;
-//listaConect.num=0;
+Partida partidas[100];
+int listos = 0;
 
-int conexion_db (){
+int conexion_db ()
+	//estableix la connexió amb la base de dades que, en aquest cas, s'anomena 'ajedrez_db'
+{
 	conn = mysql_init(NULL);
 	if (conn==NULL) {
 		printf ("Error al crear la conexion: %u %s\n", 
@@ -79,13 +77,13 @@ int conexion_db (){
 	return 0;
 }
 
- void *AtenderCliente(void *soc_ket){
-	int socket = *(int *) soc_ket;
-	//int *s;
-	//int socket;
-	//s = (int *) soc_ket;
-	//socket = *s;
-	
+ void *AtenderCliente(void *soc_ket)
+	 //es crea un bucle infinit on, mentre no es tanqui la connexió, la funció agafarà el codi que hi haurà
+	 //al principi de cada petició i, depèn de quin sigui aquest, serà una o una altre. Per exemple, si es vol
+	 //iniciar sessió, que el codi és 1, el client enviarà "1/Marc/admin1",  amb l'usuari i la contrassenya corresponents.
+	 //també s'inclou l'exclusió múltiple (mutex lock i unlock)
+ {
+	int socket = *(int *) soc_ket;	
 	 char peticion[512];
 	 char respuesta[512];
 	 char consulta[250];
@@ -126,46 +124,51 @@ int conexion_db (){
 				sprintf(respuesta,"1|%d",-2);
 			 // Enviamos respuesta
 			write (socket,respuesta, strlen(respuesta));
-			notificarConectados();
+			notificarConectados(socket);
 			break;
 		 case 2:
-			 /*pthread_mutex_lock( &mutex ); //No me interrumpas ahora
-			 contador = contador +1;
-			 pthread_mutex_unlock( &mutex); //ya puedes interrumpirme*/
+			 strcpy(peticion,strtok(NULL,"\0"));
+			 sprintf(respuesta, "2|%d", registrarse(peticion, socket));
+			 
+			 // Enviamos respuesta
+			 write (socket,respuesta, strlen(respuesta));
+			 notificarConectados();
 			 break;
 		 case 3:
 			 
 			 if(primera_consulta(respuesta) == 0)
 				 // Enviamos respuesta
 				 write (socket,respuesta, strlen(respuesta));
-				notificarConectados();
+				notificarConectados(socket);
 			 break;
 		 case 4:
 			 if(segunda_consulta(respuesta) == 0)
 				 // Enviamos respuesta
 				 write (socket,respuesta, strlen(respuesta));
-			     notificarConectados();
+			     notificarConectados(socket);
 			 break;
 		 case 5:
 			 if(tercera_consulta(respuesta) == 0)
 				 // Enviamos respuesta
 				 write (socket,respuesta, strlen(respuesta));
+			     notificarConectados(socket);
 			 break;
 		 case 6:
 			 strcpy(peticion,strtok(NULL,"\0"));
-			 
-			 
-			 else{
-				 
-				 //sprintf(respuesta,"%"7);
-				// write(err, respuesta,strlen(respuesta));
+			 err = invitacion(peticion,socket);
+			 if(err == -1){
+				strcpy(respuesta,"7|0");
+				write(socket,respuesta,strlen(respuesta));
 			 }
+			 break;
+		 case 7:
+			 strcpy(peticion,strtok(NULL,"\0"));
 			 break;
 		 default:
 			 pthread_mutex_lock( &mutex ); //No me interrumpas ahora
 			 int err = quitaConectados(socket);
 			 pthread_mutex_unlock( &mutex); //ya puedes interrumpirme
-			 notificarConectados();
+			 notificarConectados(socket);
 			 terminar = 1;
 			 break;
 		 }
@@ -175,42 +178,54 @@ int conexion_db (){
 	 pthread_exit(0);
  }
  
- int invitacion(char nombres[],int socket){
-	 ListaConectados conAux;
-	 char nombre1[50];
-	 char nombre2[50];
-	 char nombre3[50];
-	 strcpy(nombre1,strtok(nombres,',');
-	 strcpy(nombre2,strtok(NULL,',');
-	 strcpy(nombre3,strtok(NULL,'\0');
-	 if(listaPart.num == 100)
-		 return -1;
-	 else{
-		 int i = 0;
-		 for(i; i<3;i++ ){
-			 int err = dameSockCon(peticion);
-			 if(err == -1) {
-				 strcpy(respuesta,-1);
-				 write(socket,respuesta,strlen(respuesta)); 
-			 }
-			 else{
-				 
-			 }
-		
-		 }
+ int invitacion(char nombres[],int socket)
+	 //La funció agafa els noms dels connectats i els assigna als 3 invitats per envial-s'hi la invitació
+ {
+	 char n1[50];
+	 char n2[50];
+	 char respuesta[100];
+	dameNombreCon(socket,n1);
+	 for(int i = 0; i < 100;i++){
+		if(partidas[i].estado == 0){
+			strcpy(partidas[i].jugadores[0].nombre,n1);
+			partidas[i].jugadores[0].socket=socket;
+			strcpy(n2,strtok(nombres,","));
+			for(int j = 1; j<4; j++ ){
+				partidas[i].jugadores[j].socket=dameSockCon(n2);
+				strcpy(partidas[i].jugadores[j].nombre,n2);
+				sprintf(respuesta,"7|%s",n1);
+				write(partidas[i].jugadores[j].socket,respuesta, strlen(respuesta));
+				if(j<3)
+					strcpy(n2,strtok(NULL,","));
+			}
+			partidas[i].estado = 1;
+			return 0;	
+		}
+	 }
+	 return -1;
+ }
+ 
+ int inicioPart(char pet[]){
+	 int res = atoi(strtok(NULL,"|"));
+	 if(res == 1){
+		 
 	 }
  }
  
- void notificarConectados(){
-	 char notificacion[512];
-	dameConectados(notificacion);
+ void notificarConectados()
+	 //A cada usuari de la llista connectats mostra els que estan connectats
+ {
+	char notificacion[512];
 	int i;
 	for(i = 0;i<listaConect.num;i++){
+		dameConectados(notificacion,listaConect.conectados[i].socket);
 		write (listaConect.conectados[i].socket,notificacion, strlen(notificacion));
 	}
  }
  
 int iniciar_sesion(char peticion[],int socket) 
+	//Registra nom d'usuari i contrassenya, i si consten a la base de dades,la cosnulta fa connectar-te al servidor.
+	//La solicitud la farà enviant el codi corresponent, l'1, seguit del nom i de la contraseenya (1/tolo/admin1).
 {
 	char username[35];
 	char pass[35];
@@ -239,11 +254,51 @@ int iniciar_sesion(char peticion[],int socket)
 	}
 }
 
-int registrarse(){
-
+int registrarse (char peticion[], int socket) 
+	//funcion que recibe la peticion del boton registrarse y añade los parametros de un jugador a la base de datos
+	//los parametros son: nombre, apellido1, apellido2, username, password y edad.
+{
+	int edad;
+	char username[35];
+	char pass[35];
+	char consulta[256];
+	char nombre[35], ap1[35],ap2[35];
+	printf("consulta, %s\n", peticion);
+	strcpy(nombre,strtok(peticion,"/"));
+	strcpy(ap1,strtok(NULL,"/"));
+	strcpy(ap2,strtok(NULL,"/"));
+	strcpy(username,strtok(NULL,"/"));
+	strcpy(pass,strtok(NULL,"/"));
+	edad = atoi(strtok(NULL,"/"));
+	
+	sprintf(consulta,"SELECT*FROM jugador WHERE user_name='%s' AND password='%s'", username, pass);
+	int err=mysql_query(conn,consulta);
+	if(err != 0){
+		printf("Error al consultar datos de la base %u %s \n", mysql_errno(conn), mysql_error(conn));
+		exit (1);
+	}
+	resultado=mysql_store_result(conn);
+	row=mysql_fetch_row(resultado);
+	
+	if(row==NULL){
+		sprintf(consulta, "INSERT INTO jugador (id, nombre,apellido1,apellido2,user_name,password, edat) Values(NULL,'%s','%s','%s','%s','%s',%d)", nombre, ap1, ap2, username, pass, edad);
+		printf("%s\n", consulta);
+		int err = mysql_query(conn, consulta);
+		if(err != 0){
+			printf("Error al consultar datos de la base %u %s \n", mysql_errno(conn), mysql_error(conn));
+			exit (1);
+		}
+		return 0;
+	}
+	else 
+	   return -1;
 }
 
-int ponConectados(char nombre[50], int socket){
+
+int ponConectados(char nombre[50], int socket)
+	//Si un usuari es connecta, sempre i quan no s'excedeixi el límit de jugadors, es copia el nom a la llista 
+	//de connectats juntament amb el seu socket.
+{	
 	if(listaConect.num == 100)
 		return -1;
 	else {
@@ -254,7 +309,9 @@ int ponConectados(char nombre[50], int socket){
 	}
 }
 
-int dameNombreCon(int soc, char nombre[]){
+int dameNombreCon(int soc, char nombre[])
+	//Donat un socket dona el nom de l'usuari associat
+{
 	int i;
 	for(i = 0; i < listaConect.num; i++){
 		if(listaConect.conectados[i].socket == soc){
@@ -265,7 +322,9 @@ int dameNombreCon(int soc, char nombre[]){
 	return -1;
 }
 
-int dameSockCon(char nombre[]){
+int dameSockCon(char nombre[])
+	//Donat un nom d'uruari, dona el seu socket associat
+{
 	int i;
 	for(i = 0; i < listaConect.num; i++){
 		if(strcmp(listaConect.conectados[i].nombre,nombre) == 0)
@@ -274,7 +333,9 @@ int dameSockCon(char nombre[]){
 	return -1;
 }
 
-int quitaConectados(int socket){
+int quitaConectados(int socket)
+	//Compara el socket el qual es vol desconnectar de la llista i quan el troba l'elimina juntament amb el nom
+{
 	int i =0;
 	while(i < listaConect.num){
 		if(listaConect.conectados[i].socket==socket){
@@ -284,6 +345,7 @@ int quitaConectados(int socket){
 			}
 			listaConect.conectados[i].nombre[0] = '\0';
 			listaConect.conectados[i].socket = 0;
+			listaConect.num--;
 			return 0;
 		}
 		i++;
@@ -291,21 +353,24 @@ int quitaConectados(int socket){
 	return -1;
 }
 
-void dameConectados(char notificacion[]){
+void dameConectados(char notificacion[],int s)
+	//Funció que imprimeixbels noms dels connectats de la llistaConnect.
+{
 	int i = 0;
-	
-	sprintf(notificacion,"6|%d/",listaConect.num);
-	//printf("%d\n",listaConect.num);
+	char n[50];
+	sprintf(notificacion,"6|%d/",listaConect.num-1);
 	while(i < listaConect.num){
-		printf("%s\n",listaConect.conectados[i].nombre);
-		sprintf(notificacion,"%s%s/",notificacion,listaConect.conectados[i].nombre);
+		dameNombreCon(s,n);
+		if(strcmp(n,listaConect.conectados[i].nombre)!=0)
+			sprintf(notificacion,"%s%s/",notificacion,listaConect.conectados[i].nombre);
 		i++;
 	}
 	notificacion[strlen(notificacion)-1]= NULL;
-	//printf("%s\n",notificacion);
 }
 
-int primera_consulta(char respuesta[]){
+int primera_consulta(char respuesta[])
+	//Búsqueda on mostra els noms del jugadors que han guanyar partides de menys d'1 hora
+{
 	respuesta[0] = '\0';
 	int err=mysql_query (conn,"select distinct jugador.nombre, jugador.apellido1, jugador.apellido2 from (jugador,partidas,resultado) where partidas.duracion < '01:00:00' AND partidas.ganador = jugador.id AND partidas.id = resultado.idP AND resultado.idJ = jugador.id");
 	if (err!=0) { 
@@ -332,7 +397,9 @@ int primera_consulta(char respuesta[]){
 	}
 	return 0;
 }
-int segunda_consulta(char respuesta[]){
+int segunda_consulta(char respuesta[])
+	//Búsqueda que indica els nonms dels guanyadors amb més punts
+{
 	int err=mysql_query (conn, "select jugador.nombre, jugador.apellido1, jugador.apellido2 from (jugador,partidas,resultado) where jugador.id = resultado.idJ and resultado.puntos = (select MAX(resultado.puntos) from (resultado)) and jugador.id = partidas.ganador");
 	if (err!=0) { 	
 		printf ("Error al consultar datos de la base %u %s\n",mysql_errno(conn), mysql_error(conn)); 
@@ -356,7 +423,9 @@ int segunda_consulta(char respuesta[]){
 	}
 	return 0;
 }
-int tercera_consulta(char respuesta[]){
+int tercera_consulta(char respuesta[])
+	//Búsqueda que mostra els noms dels guanyadors menors de 18 anys
+{
 	int err=mysql_query (conn,"select distinct jugador.nombre, jugador.apellido1, jugador.apellido2 from (jugador,partidas,resultado) where partidas.ganador = jugador.id AND  jugador.edat > = 18");
 	if (err!=0) { 
 		printf ("Error al consultar datos de la base %u %s\n",mysql_errno(conn), mysql_error(conn)); 
@@ -397,7 +466,7 @@ int main(int argc, char **argv)
 	//htonl formatea el numero que recibe al formato necesario
 	serv_adr.sin_addr.s_addr = htonl(INADDR_ANY);
 	// establecemos el puerto de escucha
-	serv_adr.sin_port = htons(9060);
+	serv_adr.sin_port = htons(9050);
 	if (bind(sock_listen, (struct sockaddr *) &serv_adr, sizeof(serv_adr)) < 0)
 		printf ("Error al bind");
 	

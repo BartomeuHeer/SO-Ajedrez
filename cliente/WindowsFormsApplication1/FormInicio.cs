@@ -15,11 +15,11 @@ namespace WindowsFormsApplication1
     {
         Socket server;
         Thread atender;
-        string invitados;
+        //string invitados;
         public FormInicio()
         {
             InitializeComponent();
-            CheckForIllegalCrossThreadCalls = false; //Necesario para que los elementos de los formularios puedan ser
+            //CheckForIllegalCrossThreadCalls = false; //Necesario para que los elementos de los formularios puedan ser
             //accedidos desde threads diferentes a los que los crearon
         }
         private void show_inicio()
@@ -52,9 +52,6 @@ namespace WindowsFormsApplication1
             rb2.Invoke(new MethodInvoker(delegate { rb2.Visible = true; }));
             rb3.Invoke(new MethodInvoker(delegate { rb3.Visible = true; }));
             btBuscar.Invoke(new MethodInvoker(delegate { btBuscar.Visible = true; }));
-            
-            rb3.Visible = true;
-            btBuscar.Visible = true;
         }
 
         private void AtenderServidor()
@@ -142,17 +139,34 @@ namespace WindowsFormsApplication1
 
                         break;
                     case 6:
-                        dataGridConect.Rows.Clear();
-                        dataGridConect.Refresh();
+                        dataGridConect.Invoke(new MethodInvoker(delegate { dataGridConect.Rows.Clear(); })); 
+                        dataGridConect.Invoke(new MethodInvoker(delegate { dataGridConect.Refresh(); }));
                         total = Int32.Parse(mensaje.Split('/')[0]);
                         info = mensaje.Split('/');
                         for (int i = 1; i <= total; i++)
                         {
-                            dataGridConect.Rows.Add(info[i]);
+                            dataGridConect.Invoke(new MethodInvoker(delegate { dataGridConect.Rows.Add(info[i]); }));
                         }
                         break;
                     case 7:
-
+                        if(mensaje == "0")
+                            MessageBox.Show("Ha habido un error");
+                        else
+                        {
+                            DialogResult dialogResult = MessageBox.Show("¿Aceptar invitacion de " + mensaje + "?", "Invitacion a partida", MessageBoxButtons.OKCancel);
+                            if(dialogResult == DialogResult.OK)
+                            {
+                                mensaje = "7/0|" + mensaje;
+                                byte[] msg = Encoding.ASCII.GetBytes(mensaje);
+                                server.Send(msg);
+                            }
+                            else
+                            {
+                                mensaje = "7/1|" + mensaje;
+                                byte[] msg = Encoding.ASCII.GetBytes(mensaje);
+                                server.Send(msg);
+                            }
+                        }
                         break;
                 }
             }
@@ -162,7 +176,7 @@ namespace WindowsFormsApplication1
             //Creamos un IPEndPoint con el ip del servidor y puerto del servidor 
             //al que deseamos conectarnos
             IPAddress direc = IPAddress.Parse("192.168.56.102");
-            IPEndPoint ipep = new IPEndPoint(direc, 9060);
+            IPEndPoint ipep = new IPEndPoint(direc, 9050);
 
 
             //Creamos el socket 
@@ -239,24 +253,20 @@ namespace WindowsFormsApplication1
 
         private void btnInv_Click(object sender, EventArgs e)
         {
-            string mensaje;
+            string mensaje = "6/";
+            
             if(dataGridConect.SelectedRows.Count!= 3)
             {
                 MessageBox.Show("Selecciona 3 jugadores por favor.");
             }
             else
             {
-                invitados = invitados.Remove(invitados.Length - 1);
-                for(int i = 0; i < dataGridConect.SelectedRows.Count; i++)
-                {
-                    mensaje = "6/" + invitados;
-                }
+                foreach(DataGridViewRow row in dataGridConect.SelectedRows)
+                    mensaje = mensaje + row.Cells[0].Value.ToString() + ",";
+                //mensaje.Remove(mensaje.Length - 1);
+                byte[] msg = Encoding.ASCII.GetBytes(mensaje);
+                server.Send(msg);
             }
-        }
-
-        private void dataGridConect_CellClick(object sender, DataGridViewCellEventArgs e)
-        {
-            invitados = dataGridConect.Rows[e.RowIndex].Cells[0].Value.ToString() + ",";
         }
     }
 }
