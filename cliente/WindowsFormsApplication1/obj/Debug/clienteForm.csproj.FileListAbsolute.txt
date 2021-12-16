@@ -134,3 +134,4 @@ D:\Documentos\Uni\Tercer curs\SO\SO-Ajedrez\cliente\WindowsFormsApplication1\obj
 D:\Documentos\Uni\Tercer curs\SO\SO-Ajedrez\cliente\WindowsFormsApplication1\obj\Debug\clienteForm.csproj.CoreCompileInputs.cache
 D:\Documentos\Uni\Tercer curs\SO\SO-Ajedrez\cliente\WindowsFormsApplication1\obj\Debug\WindowsFormsApplication1.exe
 D:\Documentos\Uni\Tercer curs\SO\SO-Ajedrez\cliente\WindowsFormsApplication1\obj\Debug\WindowsFormsApplication1.pdb
+D:\Documentos\Uni\Tercer curs\SO\SO-Ajedrez\cliente\WindowsFormsApplication1\obj\Debug\WindowsFormsApplication1.FormPartida.resources

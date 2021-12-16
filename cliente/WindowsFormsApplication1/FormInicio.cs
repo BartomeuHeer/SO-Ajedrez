@@ -9,6 +9,8 @@ using System.Windows.Forms;
 using System.Net;
 using System.Net.Sockets;
 using System.Threading;
+using WindowsFormsApplication1.Classes;
+
 namespace WindowsFormsApplication1
 {
     public partial class FormInicio : Form
@@ -149,24 +151,51 @@ namespace WindowsFormsApplication1
                         }
                         break;
                     case 7:
-                        if(mensaje == "0")
+                        int partida = Int32.Parse(mensaje.Split('/')[0]);
+                        string m = mensaje.Split('/')[1];
+                        if (m == "0")
                             MessageBox.Show("Ha habido un error");
                         else
                         {
-                            DialogResult dialogResult = MessageBox.Show("¿Aceptar invitacion de " + mensaje + "?", "Invitacion a partida", MessageBoxButtons.OKCancel);
+                            DialogResult dialogResult = MessageBox.Show("¿Aceptar invitacion de " + m + "?", "Invitacion a partida", MessageBoxButtons.OKCancel);
                             if(dialogResult == DialogResult.OK)
                             {
-                                mensaje = "7/0|" + mensaje;
-                                byte[] msg = Encoding.ASCII.GetBytes(mensaje);
+                                m = "7/0-" + partida +"|"+ m;
+                                byte[] msg = Encoding.ASCII.GetBytes(m);
                                 server.Send(msg);
                             }
                             else
                             {
-                                mensaje = "7/1|" + mensaje;
-                                byte[] msg = Encoding.ASCII.GetBytes(mensaje);
+                                m = "7/1-" + partida + "|" + m;
+                                byte[] msg = Encoding.ASCII.GetBytes(m);
                                 server.Send(msg);
                             }
                         }
+                        break;
+                    case 8:
+                        int numPart;
+                        int numJug;
+                        Partida part;
+                        Jugador[] jug = new Jugador[4];
+                        string[] inf = mensaje.Split('/');
+                        numPart = Int32.Parse(inf[1]);
+                        if (Int32.Parse(inf[0]) == 0)
+                        {
+                            numJug = Int32.Parse(inf[2]);
+                            for (int i = 3; i < numJug + 3; i++)
+                            {
+                                jug[i - 3] = new Jugador();
+                                jug[i - 3].setNombre(inf[i]);
+                            }
+                            part = new Partida(jug,numJug,numPart);
+                            FormPartida fp = new FormPartida(server, atender, part);
+                            fp.ShowDialog();
+                        }
+                        else
+                        {
+                            MessageBox.Show("Un participante ha rechazado la invitacion.");
+                        }
+
                         break;
                 }
             }
@@ -202,17 +231,27 @@ namespace WindowsFormsApplication1
 
         private void btLogin_Click(object sender, EventArgs e)
         {
-            
-            string mensaje = "1/" + tbUsernameLI.Text + "/" + tbPassLI.Text;
-            byte[] msg = Encoding.ASCII.GetBytes(mensaje);
-            server.Send(msg);
+            string mensaje;
+            if (!string.IsNullOrEmpty(tbUsernameLI.Text) || !string.IsNullOrEmpty(tbPassLI.Text)) {
+                mensaje = "1/" + tbUsernameLI.Text + "/" + tbPassLI.Text;
+                byte[] msg = Encoding.ASCII.GetBytes(mensaje);
+                server.Send(msg);
+            }
+            else
+                MessageBox.Show("Faltan cmapos por rellenar.");
         }
 
         private void btRegister_Click(object sender, EventArgs e)
         {
-            string mensaje = "2/" + tbName.Text + "/" + tbLN1.Text + "/" + tbLN2.Text + "/" + tbAge.Text + "/" + tbUserNameR.Text + "/" + tbPassR.Text;
-            byte[] msg = Encoding.ASCII.GetBytes(mensaje);
-            server.Send(msg);
+            string mensaje;
+            if (!string.IsNullOrEmpty(tbName.Text) || !string.IsNullOrEmpty(tbLN1.Text) || !string.IsNullOrEmpty(tbLN2.Text) || !string.IsNullOrEmpty(tbUserNameR.Text) || !string.IsNullOrEmpty(tbPassR.Text) || !string.IsNullOrEmpty(tbAge.Text))
+            {
+                mensaje = "2/" + tbName.Text + "/" + tbLN1.Text + "/" + tbLN2.Text + "/" + tbUserNameR.Text + "/" + tbPassR.Text + "/" + tbAge.Text;
+                byte[] msg = Encoding.ASCII.GetBytes(mensaje);
+                server.Send(msg);
+            }
+            else
+                MessageBox.Show("Faltan cmapos por rellenar.");
         }
 
         
@@ -253,16 +292,22 @@ namespace WindowsFormsApplication1
 
         private void btnInv_Click(object sender, EventArgs e)
         {
-            string mensaje = "6/";
-            
-            if(dataGridConect.SelectedRows.Count!= 3)
+            string mensaje = "";
+
+
+            if (dataGridConect.SelectedRows.Count < 1 || dataGridConect.SelectedRows.Count > 3)
             {
-                MessageBox.Show("Selecciona 3 jugadores por favor.");
+                MessageBox.Show("Selecciona a 1,2 o 3 jugadores por favor.");
             }
             else
             {
+                int i = 0;
                 foreach(DataGridViewRow row in dataGridConect.SelectedRows)
+                {
                     mensaje = mensaje + row.Cells[0].Value.ToString() + ",";
+                    i++;
+                }
+                mensaje = "6/" + i + "/" + mensaje;    
                 //mensaje.Remove(mensaje.Length - 1);
                 byte[] msg = Encoding.ASCII.GetBytes(mensaje);
                 server.Send(msg);

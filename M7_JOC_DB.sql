@@ -1,8 +1,8 @@
-DROP DATABASE if exists ajedrez_db;
+DROP DATABASE if exists M7_JOC_DB;
 
-CREATE DATABASE IF NOT EXISTS ajedrez_db;
+CREATE DATABASE IF NOT EXISTS M7_JOC_DB;
 
-USE ajedrez_db;
+USE M7_JOC_DB;
 
 CREATE TABLE IF NOT EXISTS jugador (
 
@@ -32,12 +32,6 @@ CREATE TABLE IF NOT EXISTS partidas (
 
 	fecha DATETIME NOT NULL,
 
-	duracion TIME NOT NULL,
-
-	ganador INT NOT NULL,
-
-	FOREIGN KEY (ganador) REFERENCES jugador(id),
-
 	PRIMARY KEY (id)
 
 	);
@@ -50,7 +44,9 @@ CREATE TABLE IF NOT EXISTS resultado (
 
 	idP INT NOT NULL,
 
-	puntos INT NOT NULL,
+	duracion TIME NOT NULL,
+
+	resultado INT,
 
 	FOREIGN KEY (idJ) REFERENCES jugador(id),
 
@@ -72,44 +68,51 @@ INSERT INTO jugador VALUES
 
 INSERT INTO partidas VALUES 
 
-	(NULL,'2021-03-21 10:03:21','01:03:21',1),
+	(NULL,'2021-03-21 10:03:21'),
 
-	(NULL,'2019-07-04 21:44:21','00:23:21',3),
+	(NULL,'2019-07-04 21:44:21'),
 
-	(NULL,'2020-12-11 16:02:22','00:46:21',3),
+	(NULL,'2020-12-11 16:02:22'),
 
-	(NULL,'2015-06-23 14:25:54','00:28:21',2),
+	(NULL,'2015-06-23 14:25:54'),
 
-	(NULL,'2021-04-05 23:12:05','01:11:21',1),
+	(NULL,'2021-04-05 23:12:05'),
 
-	(NULL,'2017-10-09 08:35:13','01:47:21',2);
+	(NULL,'2017-10-09 08:35:13');
 
 	
 
 INSERT INTO resultado VALUES
 
-	(1,1,33),
+	(1,1,'00:03:21',1),
 
-	(2,1,21),
+	(2,1,'00:05:21',2),
 
-	(1,2,25),
+	(1,2,'00:06:33',3),
 
-	(3,2,44),
+	(3,2,'00:04:11',2),
 
-	(3,3,35),
+	(2,2,'00:02:45',1),
 
-	(2,3,32),
+	(2,3,'00:03:21',1),
 
-	(1,4,21),
+	(1,3,'00:06:23',2),
 
-	(2,4,28),
+	(3,3,'00:09:44',3),
 
-	(3,5,31),
+	(1,4,'00:10:01',2),
 
-	(1,5,33),
+	(2,4,'00:08:57',1),
 
-	(2,6,39),
+	(3,5,'00:11:24',2),
 
-	(3,6,27);
+	(1,5,'00:01:54',1),
 
+	(2,6,'00:05:21',1),
+
+	(3,6,'00:12:51',2);
+
+
+
+	
 	
