@@ -19,6 +19,7 @@ typedef struct {
 	char nombre[50];
 	char tiempo[10];
 	int resultado;
+	int numForm;
 }Jugador;
 
 typedef struct {
@@ -29,6 +30,7 @@ typedef struct {
 typedef struct {
 	Jugador jugadores[4];
 	int estado;
+	int jugadoresListos;
 	int numJugadores;
 	int numAceptados;
 }Partida;
@@ -146,16 +148,46 @@ void* AtenderCliente(void* soc_ket)
 			strcpy(peticion, strtok(NULL, "\0")); //res-par|nomJug
 			inicioPart(peticion, socket);
 			break;
+		case 8:
+		{
+			int nump;
+			nump = atoi(strtok(NULL, "/"));
+			int nf = atoi(strtok(NULL, "\0"));
+			for (int i = 0; i < partidas[nump].numJugadores; i++) {
+				if (partidas[nump].jugadores[i].socket == socket)
+					partidas[nump].jugadores[i].numForm = nf;
+			}
+			break;
+		}
 		case 9:
-			printf("hola");
+		{
 			int np;
 			np = atoi(strtok(NULL, "/"));
-			char mensaje[250];
-			dameNombreCon(socket, mensaje);
-			sprintf(mensaje, "9|%s: %s", mensaje, strtok(NULL, "\0"));
-			for (int i = 0; i < partidas[np].numJugadores; i++)
-				write(partidas[np].jugadores[i].socket, mensaje, strlen(mensaje));
+			char nombre[50];
+			char chat[250];
+			strcpy(chat, strtok(NULL, "\0"));
+
+			dameNombreCon(socket, nombre);
+			for (int i = 0; i < partidas[np].numJugadores; i++) {
+				sprintf(respuesta, "9|%d/%s: %s", partidas[np].jugadores[i].numForm, nombre, chat);
+				write(partidas[np].jugadores[i].socket, respuesta, strlen(respuesta));
+			}
 			break;
+		}
+		case 10:
+		{
+			int nuP = atoi(strtok(NULL, "\0"));
+			partidas[nuP].jugadoresListos++;
+			printf("Mens: %d\n", partidas[nuP].jugadoresListos);
+			printf("Juga: %d\n", partidas[nuP].numJugadores);
+			if (partidas[nuP].jugadoresListos == partidas[nuP].numJugadores) {
+				for (int i = 0; i < partidas[nuP].numJugadores; i++) {
+					sprintf(respuesta, "10|%d", partidas[nuP].jugadores[i].numForm);
+					write(partidas[nuP].jugadores[i].socket, respuesta, strlen(respuesta));
+				}
+			}
+			break;
+		}
 		default:
 			pthread_mutex_lock(&mutex); //No me interrumpas ahora
 			int err = quitaConectados(socket);
@@ -483,7 +515,7 @@ int main(int argc, char** argv)
 	//htonl formatea el numero que recibe al formato necesario
 	serv_adr.sin_addr.s_addr = htonl(INADDR_ANY);
 	// establecemos el puerto de escucha
-	serv_adr.sin_port = htons(9050);
+	serv_adr.sin_port = htons(9060);
 	if (bind(sock_listen, (struct sockaddr*)&serv_adr, sizeof(serv_adr)) < 0)
 		printf("Error al bind");
 
@@ -495,7 +527,6 @@ int main(int argc, char** argv)
 	// Bucle infinito
 	for (;;) {
 		printf("Escuchando\n");
-		printf("%d\n", c);
 		sock_conn = accept(sock_listen, NULL, NULL);
 		printf("He recibido conexion\n");
 		//sock_conn es el socket que usaremos para este cliente

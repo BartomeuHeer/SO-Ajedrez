@@ -121,7 +121,15 @@
   </ItemGroup>
   <ItemGroup />
   <ItemGroup>
+    <Content Include="Img\boot.png" />
     <Content Include="Img\fondo.png" />
+    <Content Include="Img\fons2.png" />
+    <Content Include="Img\medusa.png" />
+    <Content Include="Img\pf3.png" />
+    <Content Include="Img\pf6.png" />
+    <Content Include="Img\rock.png" />
+    <Content Include="Img\shark2.png" />
+    <Content Include="Img\submarino.png" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

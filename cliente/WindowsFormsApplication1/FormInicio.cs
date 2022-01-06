@@ -17,6 +17,7 @@ namespace WindowsFormsApplication1
     {
         Socket server;
         Thread atender;
+        List<FormPartida> formPartidas = new List<FormPartida>();
         //string invitados;
         public FormInicio()
         {
@@ -188,24 +189,37 @@ namespace WindowsFormsApplication1
                                 jug[i - 3].setNombre(inf[i]);
                             }
                             part = new Partida(jug,numJug,numPart);
-                            FormPartida fp = new FormPartida(server, atender, part);
-                            fp.ShowDialog();
+                            ThreadStart ts = delegate { abrirFormPartida(part); };
+                            Thread t = new Thread(ts);
+                            t.Start();
                         }
                         else
                         {
                             MessageBox.Show("Un participante ha rechazado la invitacion.");
                         }
-
+                        break;
+                    case 9:
+                        formPartidas[Convert.ToInt32(mensaje.Split('/')[0])].chat(mensaje.Split('/')[1]);
+                        break;
+                    case 10:
+                        formPartidas[Convert.ToInt32(mensaje.Split('/')[0])].empezarPartida();
                         break;
                 }
             }
+        }
+        private void abrirFormPartida(Partida p)
+        {
+            int cont = formPartidas.Count;
+            FormPartida fp = new FormPartida(server,p,cont);
+            formPartidas.Add(fp);
+            fp.ShowDialog();
         }
         private void btnConect_Click(object sender, EventArgs e)
         {
             //Creamos un IPEndPoint con el ip del servidor y puerto del servidor 
             //al que deseamos conectarnos
             IPAddress direc = IPAddress.Parse("192.168.56.102");
-            IPEndPoint ipep = new IPEndPoint(direc, 9050);
+            IPEndPoint ipep = new IPEndPoint(direc, 9060);
 
 
             //Creamos el socket 
