@@ -1,8 +1,8 @@
-DROP DATABASE if exists M7_JOC_DB;
+DROP DATABASE if exists M7_DB;
 
-CREATE DATABASE IF NOT EXISTS M7_JOC_DB;
+CREATE DATABASE IF NOT EXISTS M7_DB;
 
-USE M7_JOC_DB;
+USE M7_DB;
 
 CREATE TABLE IF NOT EXISTS jugador (
 
@@ -44,7 +44,7 @@ CREATE TABLE IF NOT EXISTS resultado (
 
 	idP INT NOT NULL,
 
-	duracion TIME NOT NULL,
+	puntuacion INT,
 
 	resultado INT,
 
@@ -80,39 +80,8 @@ INSERT INTO partidas VALUES
 
 	(NULL,'2017-10-09 08:35:13');
 
-	
-
-INSERT INTO resultado VALUES
-
-	(1,1,'00:03:21',1),
-
-	(2,1,'00:05:21',2),
-
-	(1,2,'00:06:33',3),
-
-	(3,2,'00:04:11',2),
-
-	(2,2,'00:02:45',1),
-
-	(2,3,'00:03:21',1),
-
-	(1,3,'00:06:23',2),
-
-	(3,3,'00:09:44',3),
-
-	(1,4,'00:10:01',2),
-
-	(2,4,'00:08:57',1),
-
-	(3,5,'00:11:24',2),
-
-	(1,5,'00:01:54',1),
-
-	(2,6,'00:05:21',1),
-
-	(3,6,'00:12:51',2);
 
 
 
-	
+
 	
