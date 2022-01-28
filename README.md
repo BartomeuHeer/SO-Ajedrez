@@ -49,3 +49,12 @@ Rol de Verificador: Omar Fallouk
 Rol de comunicador: Bartomeu Heer 
 
 https://youtu.be/vDohl-9AS1g
+
+-Ultima versió
+Rol de Manager : Omar Fallouk
+
+Rol de Verificador::  Bartomeu Heer
+
+Rol de Comunicador: Marc Cuadrado
+
+https://youtu.be/BOpwvyntbho
