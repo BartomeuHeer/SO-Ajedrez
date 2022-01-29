@@ -1,4 +1,4 @@
-# Proyecto SO
+# Proyecto SO - Octopus Dungeon
 -Primera version
 
 Rol de manager: Marc Cuadrado
